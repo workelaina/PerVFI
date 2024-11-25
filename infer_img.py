@@ -5,6 +5,10 @@ from torch import Tensor
 from torchvision.transforms import functional as TF
 from build_models import build_model
 
+torch.set_grad_enabled(False)
+if torch.cuda.is_available():
+    torch.backends.cudnn.enabled = True
+    torch.backends.cudnn.benchmark = True
 
 def toTensor(x):
     # x: List of numpy array / A numpy array
@@ -31,5 +35,5 @@ r = toTensor(r)
 print(l.size(), r.size())
 
 model, infer = build_model('RAFT+PerVFI')
-res = infer(l, r)
+res = infer(l.to('cuda'), r.to('cuda'))
 cv2.imwrite('test/res.png', res.numpy())
