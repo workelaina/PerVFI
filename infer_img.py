@@ -30,6 +30,6 @@ l = toTensor(l)
 r = toTensor(r)
 print(l.size(), r.size())
 
-model, infer = build_model('none+PerVFI')
+model, infer = build_model('RAFT+PerVFI')
 res = infer(l, r)
 cv2.imwrite('test/res.png', res.numpy())
