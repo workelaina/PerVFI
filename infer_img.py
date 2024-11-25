@@ -36,4 +36,4 @@ print(l.size(), r.size())
 
 model, infer = build_model('RAFT+PerVFI')
 res = infer(l.to('cuda'), r.to('cuda'))
-cv2.imwrite('test/res.png', res.numpy())
+cv2.imwrite('test/res.png', res.to('cpu').numpy())
