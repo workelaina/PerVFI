@@ -1,5 +1,6 @@
 import sys
 import cv2
+import numpy as np
 import torch
 from torch import Tensor
 from torchvision.transforms import functional as TF
@@ -16,6 +17,14 @@ def toTensor(x):
     if isinstance(x, (list, tuple)):
         return list(map(lambda x: TF.to_tensor(x)[None], x))
     return TF.to_tensor(x)[None]
+
+
+def toArray(x):
+    # x: List of torch tensor / A torch tensor
+    # out: List of numpy array / A numpy array
+    if isinstance(x, (list, tuple)):
+        return [np.array(TF.to_pil_image(y[0])) for y in x]
+    return np.array(TF.to_pil_image(x[0]))
 
 
 l = cv2.imread('test/133.png', cv2.IMREAD_UNCHANGED)
@@ -36,4 +45,4 @@ print(l.size(), r.size())
 
 model, infer = build_model('RAFT+PerVFI')
 res = infer(l.to('cuda'), r.to('cuda'))
-cv2.imwrite('test/res.png', res.to('cpu').numpy())
+cv2.imwrite('test/res.png', toArray(res))
