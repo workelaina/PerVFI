@@ -31,6 +31,9 @@ ori_fps = capture.get(cv2.CAP_PROP_FPS)
 if ori_fps < 0.1:
     raise RuntimeError("The frame rate is %s!" % str(ori_fps))
 # duration = nb_frames / ori_fps
+print('nb_frames:', nb_frames)
+print('ori_fps:', ori_fps)
+print()
 
 i1 = None
 for i in range(nb_frames):
