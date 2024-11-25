@@ -30,10 +30,10 @@ def toArray(x):
 # l = cv2.imread('test/133.png', cv2.IMREAD_UNCHANGED)
 # r = cv2.imread('test/253.png', cv2.IMREAD_UNCHANGED)
 
-video = 'test/Elysia1.png'
+video = 'test/Elysia1.mp4'
 capture = cv2.VideoCapture(video)
 
-for i in range(20):
+for i in range(25):
     succ, img = capture.read()
 
 succ, l = capture.read()
