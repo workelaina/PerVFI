@@ -1,8 +1,10 @@
 import cv2
 from build_models import build_model
 
-l = cv2.imread('test/133.png')
-r = cv2.imread('test/253.png')
+l = cv2.imread('test/133.png', cv2.IMREAD_UNCHANGED)
+r = cv2.imread('test/253.png', cv2.IMREAD_UNCHANGED)
+
+print(l.size(), r.size())
 
 # video = 'test/Elysia1.png'
 # capture = cv2.VideoCapture(video)
