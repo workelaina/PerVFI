@@ -34,6 +34,7 @@ if ori_fps < 0.1:
 
 i1 = None
 for i in range(nb_frames):
+    print('batch', i)
     succ, i3 = capture.read()
     if not succ:
         raise RuntimeError(i)
