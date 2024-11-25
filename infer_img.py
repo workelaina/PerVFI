@@ -19,7 +19,6 @@ r = cv2.imread('test/253.png', cv2.IMREAD_UNCHANGED)
 l = torch.Tensor(l)
 r = torch.Tensor(r)
 print(l.size(), r.size())
-sys.exit(0)
 
 model, infer = build_model('none+PerVFI')
 res = infer(l, r)
