@@ -5,48 +5,44 @@ import torch
 from torch import Tensor
 from torchvision.transforms import functional as TF
 from build_models import build_model
+from tools import Tools
 
 torch.set_grad_enabled(False)
 if torch.cuda.is_available():
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = True
 
-def toTensor(x):
-    # x: List of numpy array / A numpy array
-    # out: List of torch tensor / A torch tensor
-    if isinstance(x, (list, tuple)):
-        return list(map(lambda x: TF.to_tensor(x)[None], x))
-    return TF.to_tensor(x)[None]
-
-
-def toArray(x):
-    # x: List of torch tensor / A torch tensor
-    # out: List of numpy array / A numpy array
-    if isinstance(x, (list, tuple)):
-        return [np.array(TF.to_pil_image(y[0])) for y in x]
-    return np.array(TF.to_pil_image(x[0]))
-
+model, infer = build_model('RAFT+PerVFI')
 
 # l = cv2.imread('test/133.png', cv2.IMREAD_UNCHANGED)
 # r = cv2.imread('test/253.png', cv2.IMREAD_UNCHANGED)
+# l = Tools.toTensor(l)
+# r = Tools.toTensor(r)
+# print(l.size(), r.size())
+# res = infer(l.to('cuda'), r.to('cuda'))
+# print(res.size())
+# cv2.imwrite('result/res.png', toArray(res))
 
 video = 'test/Elysia1.mp4'
 capture = cv2.VideoCapture(video)
+nb_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)
+nb_frames = int(nb_frames + 0.5)
+ori_fps = capture.get(cv2.CAP_PROP_FPS)
+if ori_fps < 0.1:
+    raise RuntimeError("The frame rate is %s!" % str(ori_fps))
+# duration = nb_frames / ori_fps
 
-for i in range(25):
-    succ, img = capture.read()
+i1 = None
+for i in range(nb_frames):
+    succ, i3 = capture.read()
+    if not succ:
+        raise RuntimeError(i)
+    if i:
+        cv2.imwrite('result/%d.png' % (i*2-1), Tools.toArray(infer(
+            Tools.toTensor(i1).to('cuda'),
+            Tools.toTensor(i3).to('cuda')
+        )))
+    cv2.imwrite('result/%d.png' % (i*2), i3)
+    i1 = i3
 
-succ, l = capture.read()
-cv2.imwrite('result/1.png', l)
-succ, r = capture.read()
-cv2.imwrite('result/3.png', r)
-
-l = toTensor(l)
-r = toTensor(r)
-print(l.size(), r.size())
-
-model, infer = build_model('RAFT+PerVFI')
-res = infer(l.to('cuda'), r.to('cuda'))
-print(res.size())
-# cv2.imwrite('result/res.png', toArray(res))
-cv2.imwrite('result/2.png', toArray(res))
+# ffmpeg -fflags +genpts -r 30 -i raw.h264 -c:v copy output.mp4
