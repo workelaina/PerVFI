@@ -1,7 +1,6 @@
 import argparse
 import os
 import os.path as osp
-import tempfile
 import warnings
 
 import torch
@@ -11,6 +10,12 @@ from tools import IOBuffer, Tools
 
 warnings.simplefilter("ignore", UserWarning)
 warnings.simplefilter("ignore", FutureWarning)
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+torch.set_grad_enabled(False)
+if torch.cuda.is_available():
+    torch.backends.cudnn.enabled = True
+    torch.backends.cudnn.benchmark = True
 
 ############ Arguments ############
 
@@ -31,44 +36,24 @@ parser.add_argument(
     help="different model types",
 )
 parser.add_argument(
-    "--save", "-s", type=str, default="output", help="directory for video saving"
+    "--xx", "-x", type=int, default=2, help="X 2/4/8 interpolation"
 )
-parser.add_argument(
-    "--scale", "-scale", type=int, default=2, help="X 2/4/8 interpolation"
-)
-parser.add_argument(
-    "--dataroot", "-data", type=str, default="test", help="dataset root"
-)
-parser.add_argument("--fps", "-fps", type=int, default=10, help="output frame rate")
-
 args = parser.parse_args()
 
+# python infer_video.py -o 2 -i 2
+
 ############ Preliminary ############
-
+SCALE = args.xx
+input_frames = 2
+dstDir = "test"
 tmpDir = "tmp"
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.set_grad_enabled(False)
-if torch.cuda.is_available():
-    torch.backends.cudnn.enabled = True
-    torch.backends.cudnn.benchmark = True
-SCALE = args.scale
-print("Testing on Dataset: ", args.dataroot)
-print("Running VFI method : ", args.method)
-print("TMP (temporary) Dir: ", tmpDir)
-
-visDir = args.save
-os.makedirs(visDir, exist_ok=True)
-print("VIS (visualize) Dir: ", visDir)
-
-############ build Dataset ############
-dstDir = args.dataroot
 RESCALE = None
 videos = sorted(os.listdir(dstDir))
+print("Running VFI method : ", args.method)
+print("Testing on Dataset: ", dstDir)
+print("TMP (temporary) Dir: ", tmpDir)
 
-
-############ build VFI model ############
 from build_models import build_model
-
 print("Building VFI model...")
 model, infer = build_model(args.method, device=DEVICE)
 print("Done")
@@ -83,12 +68,7 @@ def inferRGB(*inputs):
         outputs.append(tenOut.cpu())
     return outputs
 
-
-input_frames = 2
-
-############ load videos, interpolate, calc metric ############
-print(len(videos))
-scores = {}
+print(videos)
 for vid_name in tqdm(videos):
     sequences = [
         x for x in os.listdir(osp.join(dstDir, vid_name)) if ".jpg" in x or ".png" in x
@@ -114,11 +94,3 @@ for vid_name in tqdm(videos):
         if inps is None:
             break
     IO.stop()
-
-    ############ save .mp4 files for visualize ############
-
-    # print("SAVING to .mp4")
-    # os.makedirs(osp.join(visDir, vid_name), exist_ok=True)
-    # disPth = osp.join(visDir, vid_name, f"{vid_name}-{args.method}.mp4")
-
-    # Tools.frames2mp4(osp.join(tmpDir, "disImages", "*.png"), disPth, args.fps)
