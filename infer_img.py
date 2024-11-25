@@ -4,6 +4,15 @@ from build_models import build_model
 l = cv2.imread('test/133.png')
 r = cv2.imread('test/253.png')
 
-model, infer = build_model('none+PerVFI')
+# video = 'test/Elysia1.png'
+# capture = cv2.VideoCapture(video)
 
-cv2.imsave(infer(l, r), 'test/res.png')
+# for i in range(20):
+#     succ, img = capture.read()
+
+# succ, l = capture.read()
+# succ, r = capture.read()
+
+model, infer = build_model('none+PerVFI')
+res = infer(l, r)
+cv2.imwrite('test/res.png', res)
