@@ -45,9 +45,7 @@ args = parser.parse_args()
 
 ############ Preliminary ############
 
-# tmpDir = "tmp"
-tmpDir = tempfile.TemporaryDirectory().name
-os.makedirs(osp.join(tmpDir, "disImages"), exist_ok=True)
+tmpDir = "tmp"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.set_grad_enabled(False)
 if torch.cuda.is_available():
@@ -101,7 +99,9 @@ for vid_name in tqdm(videos):
     ############ build buffer with multi-threads ############
     inputSeq = sequences
     IO = IOBuffer(RESCALE, inp_num=input_frames)
-    IO.start(inputSeq, osp.join(tmpDir, "disImages"))
+
+    os.makedirs(osp.join(tmpDir, vid_name), exist_ok=True)
+    IO.start(inputSeq, osp.join(tmpDir, vid_name))
 
     ############ interpolation & write distorted frames ############
     inps = IO.reader.get()  # e.g., [I1 I3]
@@ -117,8 +117,8 @@ for vid_name in tqdm(videos):
 
     ############ save .mp4 files for visualize ############
 
-    print("SAVING to .mp4")
-    os.makedirs(osp.join(visDir, vid_name), exist_ok=True)
-    disPth = osp.join(visDir, vid_name, f"{vid_name}-{args.method}.mp4")
+    # print("SAVING to .mp4")
+    # os.makedirs(osp.join(visDir, vid_name), exist_ok=True)
+    # disPth = osp.join(visDir, vid_name, f"{vid_name}-{args.method}.mp4")
 
-    Tools.frames2mp4(osp.join(tmpDir, "disImages", "*.png"), disPth, args.fps)
+    # Tools.frames2mp4(osp.join(tmpDir, "disImages", "*.png"), disPth, args.fps)
