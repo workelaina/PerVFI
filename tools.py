@@ -10,17 +10,6 @@ import numpy as np
 import torch.utils.data as data
 from torchvision.transforms import functional as TF
 
-FFMPEG_HEAD = [
-    "ffmpeg",
-    "-hide_banner",
-    "-loglevel",
-    "error",
-    "-y",
-    "-pattern_type",
-    "glob",
-]
-
-
 class IOBuffer:
     def __init__(self, rescale="1080P", inp_num=2):
         self.writer = Queue(maxsize=100)
@@ -35,7 +24,6 @@ class IOBuffer:
                 pair = []
                 for frame in inp:
                     frame = cv2.imread(frame, cv2.IMREAD_UNCHANGED)[..., ::-1]
-                    # frame = Tools.resize(frame.copy(), self.rescale)
                     pair.append(frame)
                 pair = Tools.toTensor(pair)
                 self.reader.put(pair)
@@ -104,19 +92,6 @@ class Tools:
         ]  # flatten
         return D.append(A[-1])
 
-    # @staticmethod
-    # def resize(x, rescale=None):
-    #     assert rescale in ["1080P", "2K", "4K", None]
-    #     if rescale == "1080P":
-    #         return cv2.resize(x, dsize=(1920, 1080), interpolation=cv2.INTER_AREA)
-    #     elif rescale == "2K":
-    #         return cv2.resize(x, dsize=(2048, 1080), interpolation=cv2.INTER_AREA)
-    #     elif rescale == "4K":
-    #         return x[540:-540, 1024:-1024, :]
-    #     else:
-    #         h, w, _ = x.shape
-    #         return x[: h // 2 * 2, : w // 2 * 2, ...]
-
     @staticmethod
     def toTensor(x):
         # x: List of numpy array / A numpy array
@@ -132,24 +107,6 @@ class Tools:
         if isinstance(x, (list, tuple)):
             return [np.array(TF.to_pil_image(y[0])) for y in x]
         return np.array(TF.to_pil_image(x[0]))
-
-    @staticmethod
-    def video2frames(video, output_glob):
-        command = ["-i", video, "-pix_fmt", "rgba", output_glob]
-        subprocess.run(FFMPEG_HEAD + command)
-
-    @staticmethod
-    def frames2rawvideo(inp_glob, output_pth):
-        params = ["-framerate", "10", "-i", inp_glob, "-f", "rawvideo"]
-        out = ["-pix_fmt", "yuv420p", output_pth]
-        subprocess.run(FFMPEG_HEAD + params + out)
-
-    @staticmethod
-    def frames2mp4(inp_glob, output_pth, fps=10):
-        params = ["-framerate", str(fps), "-i", inp_glob, "-c:v", "libx264"]
-        out = ["-pix_fmt", "yuv420p", output_pth]
-        subprocess.run(FFMPEG_HEAD + params + out)
-
 
 class _BaseDST(data.Dataset):
     def __init__(self, root) -> None:
