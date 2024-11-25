@@ -27,17 +27,19 @@ def toArray(x):
     return np.array(TF.to_pil_image(x[0]))
 
 
-l = cv2.imread('test/133.png', cv2.IMREAD_UNCHANGED)
-r = cv2.imread('test/253.png', cv2.IMREAD_UNCHANGED)
+# l = cv2.imread('test/133.png', cv2.IMREAD_UNCHANGED)
+# r = cv2.imread('test/253.png', cv2.IMREAD_UNCHANGED)
 
-# video = 'test/Elysia1.png'
-# capture = cv2.VideoCapture(video)
+video = 'test/Elysia1.png'
+capture = cv2.VideoCapture(video)
 
-# for i in range(20):
-#     succ, img = capture.read()
+for i in range(20):
+    succ, img = capture.read()
 
-# succ, l = capture.read()
-# succ, r = capture.read()
+succ, l = capture.read()
+cv2.imwrite('result/1.png', l)
+succ, r = capture.read()
+cv2.imwrite('result/3.png', r)
 
 l = toTensor(l)
 r = toTensor(r)
@@ -45,4 +47,6 @@ print(l.size(), r.size())
 
 model, infer = build_model('RAFT+PerVFI')
 res = infer(l.to('cuda'), r.to('cuda'))
-cv2.imwrite('test/res.png', toArray(res))
+print(res.size())
+# cv2.imwrite('result/res.png', toArray(res))
+cv2.imwrite('result/2.png', toArray(res))
