@@ -35,7 +35,7 @@ class IOBuffer:
                 pair = []
                 for frame in inp:
                     frame = cv2.imread(frame, cv2.IMREAD_UNCHANGED)[..., ::-1]
-                    frame = Tools.resize(frame.copy(), self.rescale)
+                    # frame = Tools.resize(frame.copy(), self.rescale)
                     pair.append(frame)
                 pair = Tools.toTensor(pair)
                 self.reader.put(pair)
@@ -104,18 +104,18 @@ class Tools:
         ]  # flatten
         return D.append(A[-1])
 
-    @staticmethod
-    def resize(x, rescale=None):
-        assert rescale in ["1080P", "2K", "4K", None]
-        if rescale == "1080P":
-            return cv2.resize(x, dsize=(1920, 1080), interpolation=cv2.INTER_AREA)
-        elif rescale == "2K":
-            return cv2.resize(x, dsize=(2048, 1080), interpolation=cv2.INTER_AREA)
-        elif rescale == "4K":
-            return x[540:-540, 1024:-1024, :]
-        else:
-            h, w, _ = x.shape
-            return x[: h // 2 * 2, : w // 2 * 2, ...]
+    # @staticmethod
+    # def resize(x, rescale=None):
+    #     assert rescale in ["1080P", "2K", "4K", None]
+    #     if rescale == "1080P":
+    #         return cv2.resize(x, dsize=(1920, 1080), interpolation=cv2.INTER_AREA)
+    #     elif rescale == "2K":
+    #         return cv2.resize(x, dsize=(2048, 1080), interpolation=cv2.INTER_AREA)
+    #     elif rescale == "4K":
+    #         return x[540:-540, 1024:-1024, :]
+    #     else:
+    #         h, w, _ = x.shape
+    #         return x[: h // 2 * 2, : w // 2 * 2, ...]
 
     @staticmethod
     def toTensor(x):
