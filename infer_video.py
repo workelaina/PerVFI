@@ -59,6 +59,8 @@ print("Done")
 
 def inferRGB(*inputs):
     inputs = [x.to(DEVICE) for x in inputs]
+    for x in inputs:
+        print(x.size())
     outputs = []
     for time in range(SCALE - 1):
         t = (time + 1) / SCALE
