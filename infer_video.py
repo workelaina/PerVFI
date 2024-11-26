@@ -73,6 +73,7 @@ for vid_name in tqdm(videos):
     ]
     sequences.sort(key=lambda x: int(x[:-4]))  # NOTE: This might cause some BUG!
     sequences = [osp.join(dstDir, vid_name, x) for x in sequences]
+    print(sequences)
 
     ############ build buffer with multi-threads ############
     inputSeq = sequences
