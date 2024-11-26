@@ -15,7 +15,7 @@ if torch.cuda.is_available():
 
 model, infer = build_model('RAFT+PerVFI')
 
-video = 'archive/Elysia1.mp4'
+video = 'archive/4k.mp4'
 capture = cv2.VideoCapture(video)
 nb_frames = capture.get(cv2.CAP_PROP_FRAME_COUNT)
 nb_frames = int(nb_frames + 0.5)
