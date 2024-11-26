@@ -13,11 +13,13 @@ conda init --all
 
 cd /mnt/v1
 git clone https://github.com/workelaina/PerVFI.git
+cd PerVFI
 conda env create -f environment.yaml
 conda activate pervfi
 
 git pull
-python infer_video.py -m raft+pervfi --xx 2
+python infer_2x.py -m raft+pervfi
+# python infer_video.py -m raft+pervfi --xx 2
 
 scp -r ubuntu@pervfi.mil:/mnt/v1/PerVFI/result ./
 ```
