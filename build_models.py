@@ -29,7 +29,7 @@ def build_model(name, device="cuda"):
         raise ValueError("model name not supported")
 
     def infer(I1, I2, time=0.5):
-        divide = 8
+        divide = 16
         _, _, H, W = I1.size()
         H_padding = (divide - H % divide) % divide
         W_padding = (divide - W % divide) % divide
