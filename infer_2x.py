@@ -1,4 +1,5 @@
 import cv2
+import argparse
 import warnings
 import torch
 from torch import Tensor
@@ -13,7 +14,26 @@ if torch.cuda.is_available():
     torch.backends.cudnn.enabled = True
     torch.backends.cudnn.benchmark = True
 
-model, infer = build_model('RAFT+PerVFI')
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--method",
+    "-m",
+    type=str,
+    default="raft+pervfi",
+    choices=[
+        "raft+pervfi",
+        "raft+pervfi-vb",
+        "gma+pervfi",
+        "gma+pervfi-vb",
+        "gmflow+pervfi",
+        "gmflow+pervfi-vb",
+    ],
+    help="different model types",
+)
+args = parser.parse_args()
+
+method_name: str = args.method
+model, infer = build_model(method_name)
 
 video = 'archive/4k.mp4'
 capture = cv2.VideoCapture(video)
@@ -27,6 +47,8 @@ print('nb_frames:', nb_frames)
 print('ori_fps:', ori_fps)
 print()
 
+pth = 'result/' + method_name.split('+')[0] + '/%d.png'
+
 for i in range(nb_frames):
     print('batch', i)
     succ, img = capture.read()
@@ -34,8 +56,9 @@ for i in range(nb_frames):
         raise RuntimeError(i)
     t3 = Tools.toTensor(img).to('cuda')
     if i:
-        t2 = infer(t1, t3)
+        with torch.no_grad():
+            t2 = infer(t1, t3)
         i2 = Tools.toArray(t2.to('cpu'))
-        cv2.imwrite('result/%d.png' % (i*2-1), i2)
-    cv2.imwrite('result/%d.png' % (i*2), img)
+        cv2.imwrite(pth % (i*2-1), i2)
+    cv2.imwrite(pth % (i*2), img)
     t1 = t3
