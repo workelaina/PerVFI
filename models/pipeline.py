@@ -37,7 +37,9 @@ class Pipeline_infer(torch.nn.Module):
             self.flownet, self.compute_flow = build_flow_estimator(flownet)
             self.flownet.to("cuda").eval()
 
-        self.netG = build_generator_arch(generator)
+        self.netG = torch.nn.DataParallel(
+            build_generator_arch(generator).cuda()
+        )
         state_dict = {
             k.replace("module.", ""): v for k, v in torch.load(model_file).items()
         }

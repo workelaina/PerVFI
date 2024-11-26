@@ -1,5 +1,5 @@
 import warnings
-import torch
+
 from torch.nn import functional as F
 
 warnings.simplefilter("ignore", UserWarning)
@@ -14,9 +14,7 @@ def build_model(name, device="cuda"):
         ofnet = name.split("+")[0]
         ofnet = None if ofnet == "none" else ofnet
 
-        model = torch.nn.DataParallel(
-            Pipeline_infer(ofnet, "vb", model_file=ckpt).cuda()
-        )
+        model = Pipeline_infer(ofnet, "vb", model_file=ckpt)
     elif "pervfi" in name.lower():
         from models.pipeline import Pipeline_infer
 
@@ -25,9 +23,7 @@ def build_model(name, device="cuda"):
         ofnet = name.split("+")[0]
         ofnet = None if ofnet == "none" else ofnet
 
-        model = torch.nn.DataParallel(
-            Pipeline_infer(ofnet, "v00", model_file=ckpt).cuda()
-        )
+        model = Pipeline_infer(ofnet, "v00", model_file=ckpt)
 
     else:
         raise ValueError("model name not supported")
