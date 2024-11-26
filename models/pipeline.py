@@ -35,14 +35,16 @@ class Pipeline_infer(torch.nn.Module):
             self.flownet = None
         else:
             self.flownet, self.compute_flow = build_flow_estimator(flownet)
-            self.flownet.to("cuda").eval()
+            self.flownet = self.flownet.cuda()
+            self.flownet.eval()
 
         self.netG = build_generator_arch(generator)
         state_dict = {
             k.replace("module.", ""): v for k, v in torch.load(model_file).items()
         }
         self.netG.load_state_dict(state_dict)
-        self.netG.cuda().eval()
+        self.netG = self.netG.cuda()
+        self.netG.eval()
         self.netG = torch.nn.DataParallel(self.netG)
 
     def forward(self, img0, img1, heat=0.3, time=0.5, flows=None):

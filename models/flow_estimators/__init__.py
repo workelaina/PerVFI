@@ -35,7 +35,7 @@ class InputPadder:
         return [self._unpad_(x) for x in inputs]
 
 
-def build_flow_estimator(name, device="cuda"):
+def build_flow_estimator(name):
     if name.lower() == "raft":
         import argparse
 
@@ -49,12 +49,13 @@ def build_flow_estimator(name, device="cuda"):
         model.load_state_dict(
             {k.replace("module.", ""): v for k, v in torch.load(ckpt).items()}
         )
-        model.to(device).eval()
+        model = model.cuda()
+        model.eval()
 
         @torch.no_grad()
         def infer(I1, I2):
-            I1 = I1.to(device) * 255.0
-            I2 = I2.to(device) * 255.0
+            I1 = I1.cuda() * 255.0
+            I2 = I2.cuda() * 255.0
             padder = InputPadder(I1.shape, 8)
             I1, I2 = padder.pad(I1, I2)
             fflow = model(I1, I2, bidirection=False, iters=12)
@@ -74,12 +75,13 @@ def build_flow_estimator(name, device="cuda"):
         model.load_state_dict(
             {k.replace("module.", ""): v for k, v in torch.load(ckpt).items()}
         )
-        model.to(device).eval()
+        model = model.cuda()
+        model.eval()
 
         @torch.no_grad()
         def infer(I1, I2):
-            I1 = I1.to(device) * 255.0
-            I2 = I2.to(device) * 255.0
+            I1 = I1.cuda() * 255.0
+            I2 = I2.cuda() * 255.0
             padder = InputPadder(I1.shape, 8)
             I1, I2 = padder.pad(I1, I2)
             fflow = model(I1, I2, bidirection=False, iters=12)
@@ -102,12 +104,13 @@ def build_flow_estimator(name, device="cuda"):
         model.load_state_dict(
             {k.replace("module.", ""): v for k, v in torch.load(ckpt).items()}
         )
-        model.to(device).eval()
+        model = model.cuda()
+        model.eval()
 
         @torch.no_grad()
         def infer(I1, I2):
-            I1 = I1.to(device) * 255.0
-            I2 = I2.to(device) * 255.0
+            I1 = I1.cuda() * 255.0
+            I2 = I2.cuda() * 255.0
             padder = InputPadder(I1.shape, 8)
             I1, I2 = padder.pad(I1, I2)
             _, fflow = model(I1, I2, test_mode=True, iters=20)
@@ -128,12 +131,13 @@ def build_flow_estimator(name, device="cuda"):
         )
         ckpt = "checkpoints/GMFlow/gmflow_sintel-0c07dcb3.pth"
         model.load_state_dict(torch.load(ckpt)["model"])
-        model.to(device).eval()
+        model = model.cuda()
+        model.eval()
 
         @torch.no_grad()
         def infer(I1, I2):
-            I1 = I1.to(device) * 255.0
-            I2 = I2.to(device) * 255.0
+            I1 = I1.cuda() * 255.0
+            I2 = I2.cuda() * 255.0
             padder = InputPadder(I1.shape, 16)
             I1, I2 = padder.pad(I1, I2)
             results_dict = model(

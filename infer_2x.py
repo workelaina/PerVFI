@@ -54,11 +54,11 @@ for i in range(nb_frames):
     succ, img = capture.read()
     if not succ:
         raise RuntimeError(i)
-    t3 = Tools.toTensor(img).to('cuda')
+    t3 = Tools.toTensor(img).cuda()
     if i:
         with torch.no_grad():
             t2 = infer(t1, t3)
-        i2 = Tools.toArray(t2.to('cpu'))
+        i2 = Tools.toArray(t2.cpu())
         cv2.imwrite(pth % (i*2-1), i2)
     cv2.imwrite(pth % (i*2), img)
     t1 = t3

@@ -5,7 +5,7 @@ from torch.nn import functional as F
 warnings.simplefilter("ignore", UserWarning)
 
 
-def build_model(name, device="cuda"):
+def build_model(name):
     if "pervfi-vb" in name.lower():
         from models.pipeline import Pipeline_infer
 
@@ -39,4 +39,4 @@ def build_model(name, device="cuda"):
         pred = model.inference_rand_noise(I1, I2, heat=0.3, time=time)
         return pred[..., :H, :W]
 
-    return model.to(device), infer
+    return model, infer

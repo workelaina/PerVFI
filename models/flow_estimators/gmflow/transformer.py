@@ -17,7 +17,7 @@ def single_head_full_attention(q, k, v):
 
 
 def generate_shift_window_attn_mask(input_resolution, window_size_h, window_size_w,
-                                    shift_size_h, shift_size_w, device=torch.device('cuda')):
+                                    shift_size_h, shift_size_w, device):
     # Ref: https://github.com/microsoft/Swin-Transformer/blob/main/models/swin_transformer.py
     # calculate attention mask for SW-MSA
     h, w = input_resolution
