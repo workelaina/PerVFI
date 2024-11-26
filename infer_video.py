@@ -40,8 +40,6 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# python infer_video.py -o 2 -i 2
-
 ############ Preliminary ############
 SCALE = args.xx
 input_frames = 2
