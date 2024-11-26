@@ -19,16 +19,13 @@ class IOBuffer:
 
     def build_read_buffer(self, inpSeq):
         dataGen = Tools.toPairs(inpSeq, self.inp_num)
-        try:
-            for inp in dataGen:
-                pair = []
-                for frame in inp:
-                    frame = cv2.imread(frame, cv2.IMREAD_UNCHANGED)[..., ::-1]
-                    pair.append(frame)
-                pair = Tools.toTensor(pair)
-                self.reader.put(pair)
-        except:
-            pass
+        for inp in dataGen:
+            pair = []
+            for frame in inp:
+                frame = cv2.imread(frame, cv2.IMREAD_UNCHANGED)[..., ::-1]
+                pair.append(frame)
+            pair = Tools.toTensor(pair)
+            self.reader.put(pair)
         self.reader.put(None)
 
     def clear_write_buffer(self, out_dir):
